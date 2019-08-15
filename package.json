@@ -1,0 +1,43 @@
+{
+  "name": "@skazska/a-s-m-jwt-auth",
+  "preferGlobal": true,
+  "bin": "./index.js",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "clear-dist": "rm -rf dist/*",
+    "clear-docs": "rm -rf docs/*",
+    "compile": "npm run clear-dist && tsc",
+    "compile-test": "tsc -p tsconfig.test.json",
+    "gen-docs": "npm run clear-docs && typedoc --out docs --mode modules",
+    "test": "npm run compile-test && mocha -r ts-node/register test/**/*.spec.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skazska/a-s-m-jwt-auth.git"
+  },
+  "author": "skazska@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/skazska/a-s-m-jwt-auth/issues"
+  },
+  "homepage": "https://github.com/skazska/a-s-m-jwt-auth#readme",
+  "devDependencies": {
+    "@types/chai": "^4.2.0",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.7.1",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "sinon": "^7.4.1",
+    "sinon-chai": "^3.3.0",
+    "ts-node": "^8.3.0",
+    "typedoc": "^0.15.0",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "@skazska/abstract-service-model": "^0.2.7",
+    "jsonwebtoken": "^8.5.1"
+  }
+}
