@@ -1,51 +1,51 @@
-import {AbstractAuth, IAuthError, IAuthIdentity, IIdentityResult, failure, success, GenericResult} from "@skazska/abstract-service-model";
+import {
+    AbstractAuth,
+    IAuthError,
+    IAuthIdentity,
+    IAccessDetails,
+    failure,
+    success,
+    GenericResult,
+    IAuthData,
+    IAuthOptions
+} from "@skazska/abstract-service-model";
 import {verify, sign} from "jsonwebtoken";
 
 //TODO this is to implement later
 
-export const SECRET = 'secret';
-
-export class JWTAuthIdentity implements IAuthIdentity {
-    constructor(private token :string, protected _secret :any) {}
-
-    protected secret() :string {
-        return <string>this._secret;
-    }
-
-    access(realm :string, op: string) :Promise<GenericResult<boolean, IAuthError>> {
-        try {
-            let re = new RegExp('^(?:.*[|:;,\\/])*' + op);
-            verify(this.token, this.secret(), {subject: realm, audience: re});
-            return Promise.resolve(success(true));
-        } catch (e) {
-            return Promise.resolve(failure([AbstractAuth.error(e.message)]));
-        }
-    };
+interface IJWTData {
+    sub: string,
+    aud: string[],
+    data: any
 }
 
-
-
 export class JWTAuth extends AbstractAuth {
-    constructor(protected _secret :any, ) {
-        super();
+    constructor(
+        identityConstructor :(subject :string, details :IAccessDetails, realm? :string) => IAuthIdentity,
+        options?: IAuthOptions
+    ) {
+        super(identityConstructor, options);
     }
 
-    protected secret() :string {
-        return <string>this._secret;
-    }
-
-    identify (token :string) :Promise<IIdentityResult> {
+    protected verify(secret: any, token: string, realm?: string): Promise<GenericResult<IAuthData, IAuthError>> {
         try {
-            verify(token, this.secret());
-            return Promise.resolve(success(new JWTAuthIdentity(token, this._secret)));
+            let content = <IJWTData>verify(token, secret, {audience: realm});
+            return Promise.resolve(success({subject: content.sub, details: content.data, realms: content.aud}));
         } catch (e) {
             return Promise.resolve(failure([AbstractAuth.error('bad tokens')]));
         }
     }
 
-    grant(realm :string, ops: string) :Promise<GenericResult<string, IAuthError>> {
-        let token = sign({}, this.secret(), {subject: realm, audience: ops});
-        return Promise.resolve(success(token));
+    async grant(details: any, subject :string, realms?: string[]) :Promise<GenericResult<string, IAuthError>> {
+        try {
+            let secret = await this.secret();
+            if (secret.isFailure) return failure(secret.errors);
+
+            let token = sign({data: details}, secret.get(), {subject: subject, audience: realms || []});
+            return Promise.resolve(success(token));
+        } catch (e) {
+            return Promise.resolve(failure([e]));
+        }
     }
 
 }
