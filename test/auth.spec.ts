@@ -36,9 +36,9 @@ describe('auth', () => {
     });
     it('#IAuthIdentity access method ', async () => {
         expect(identity.access('a', 'read').get()).to.be.true;
-        expect(identity.access('a', 'write').get()).to.be.false;
+        expect(identity.access('a', 'write').isFailure).to.be.true;
         expect(identity.access('b', 'xwrite').get()).to.be.true;
-        expect(identity.access('b', 'ywrite').get()).to.be.false;
+        expect(identity.access('b', 'ywrite').isFailure).to.be.true;
     });
     it('#grant with realms returns success with token', async () => {
         let tokenResult = await instance.grant({a: 'read', b: 'x.*'}, 'user', ['r1']);
@@ -61,9 +61,9 @@ describe('auth', () => {
 
     it('#IAuthIdentity access method ', async () => {
         expect(identity.access('a', 'read').get()).to.be.true;
-        expect(identity.access('a', 'write').get()).to.be.false;
+        expect(identity.access('a', 'write').isFailure).to.be.true;
         expect(identity.access('b', 'xwrite').get()).to.be.true;
-        expect(identity.access('b', 'ywrite').get()).to.be.false;
+        expect(identity.access('b', 'ywrite').isFailure).to.be.true;
     });
 
 });
