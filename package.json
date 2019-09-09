@@ -2,7 +2,7 @@
   "name": "@skazska/a-s-m-jwt-auth",
   "preferGlobal": true,
   "bin": "./index.js",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "",
   "main": "index.js",
   "types": "index.d.ts",
