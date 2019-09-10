@@ -26,7 +26,7 @@
   "homepage": "https://github.com/skazska/a-s-m-jwt-auth#readme",
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^0.1.3",
-    "@types/chai": "^4.2.1",
+    "@types/chai": "^4.2.2",
     "@types/jsonwebtoken": "^8.3.3",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.7.4",
@@ -40,7 +40,7 @@
     "typescript": "^3.6.2"
   },
   "dependencies": {
-    "@skazska/abstract-service-model": "^0.3.12",
+    "@skazska/abstract-service-model": "^0.4.0",
     "jsonwebtoken": "^8.5.1"
   }
 }
