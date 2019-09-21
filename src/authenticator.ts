@@ -39,7 +39,7 @@ export class JWTAuth extends AbstractAuth {
      * @param token - token
      * @param realm - realm to check
      */
-    protected verify(secret: any, token: string, realm?: string): Promise<GenericResult<IAuthData, IAuthError>> {
+    protected verify(secret: any, token: string, realm?: string): Promise<GenericResult<IAuthData>> {
         try {
             let content = <IJWTData>verify(token, secret, {audience: realm});
             return Promise.resolve(success({subject: content.sub, details: content.data, realms: content.aud}));
@@ -54,10 +54,10 @@ export class JWTAuth extends AbstractAuth {
      * @param subject - subject
      * @param realms - realms
      */
-    async grant(details: any, subject :string, realms?: string[]) :Promise<GenericResult<string, IAuthError>> {
+    async grant(details: any, subject :string, realms?: string[]) :Promise<GenericResult<string>> {
         try {
             let secret = await this.secret();
-            if (secret.isFailure) return failure(secret.errors);
+            if (secret.isFailure) return secret.asFailure();
 
             let token = sign({data: details}, secret.get(), {subject: subject, audience: realms || []});
             return Promise.resolve(success(token));

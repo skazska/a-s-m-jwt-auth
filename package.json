@@ -40,7 +40,7 @@
     "typescript": "^3.6.3"
   },
   "dependencies": {
-    "@skazska/abstract-service-model": "^0.5.0",
+    "@skazska/abstract-service-model": "^0.5.1",
     "jsonwebtoken": "^8.5.1"
   }
 }
