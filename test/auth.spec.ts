@@ -41,19 +41,19 @@ describe('auth', () => {
         expect(identity.access('b', 'ywrite').isFailure).to.be.true;
     });
     it('#grant with realms returns success with token', async () => {
-        let tokenResult = await instance.grant({a: 'read', b: 'x.*'}, 'user', ['r1']);
+        let tokenResult = await instance.grant({a: 'read', b: 'x.*'}, 'user', {realms: ['r1']});
         token = tokenResult.get();
         expect(token).to.be.a('string');
     });
 
     it('#identify returns failure on wrong realm', async () => {
-        let identityResult = await instance.identify(token, 'r2');
+        let identityResult = await instance.identify(token, {verifyOptions: {realm: 'r2'}});
         expect(identityResult.isFailure).to.be.true;
         expect(identityResult.errors[0].message).equal('bad tokens');
     });
 
     it('#identify returns success with instance of IAuthIdentity and has method access and property subject', async () => {
-        let identityResult = await instance.identify(token, 'r1');
+        let identityResult = await instance.identify(token, {verifyOptions: {realm: 'r1'}});
         identity = identityResult.get();
         expect(identity).to.have.property('access').which.is.a('function');
         expect(identity).to.have.property('subject').which.equals('user');
