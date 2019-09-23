@@ -17,7 +17,7 @@ import {
     IAuthVerifyOptions,
     IAbstractAuthIdentifyOptions
 } from "@skazska/abstract-service-model";
-import {verify, sign} from "jsonwebtoken";
+import {verify, sign, SignOptions, VerifyOptions} from "jsonwebtoken";
 
 interface IJWTData {
     sub: string,
@@ -30,18 +30,6 @@ interface IJWTData {
  */
 export interface IJWTAuthOptions extends IAuthOptions {
 
-}
-
-export interface IJWTAuthData extends IAuthData{
-    realms?: string[];
-}
-
-export interface IJWTAuthGrantOptions extends IAuthGrantOptions {
-    realms?: string[];
-}
-
-export interface IJWTAuthVerifyOptions extends IAuthVerifyOptions {
-    realm? :string;
 }
 
 export class JWTAuth extends AbstractAuth {
@@ -62,11 +50,10 @@ export class JWTAuth extends AbstractAuth {
      * @param token - token
      * @param options
      */
-    protected verify(secret: any, token: string, options?: IJWTAuthVerifyOptions): Promise<GenericResult<IJWTAuthData>> {
-        const realm = options && options.realm;
+    protected verify(secret: any, token: string, options?: VerifyOptions): Promise<GenericResult<IAuthData>> {
         try {
-            let content = <IJWTData>verify(token, secret, {audience: realm});
-            return Promise.resolve(success({subject: content.sub, details: content.data, realms: content.aud}));
+            let content = <IJWTData>verify(token, secret, options);
+            return Promise.resolve(success({subject: content.sub, details: content.data}));
         } catch (e) {
             return Promise.resolve(failure([AbstractAuth.error('bad tokens')]));
         }
@@ -78,13 +65,12 @@ export class JWTAuth extends AbstractAuth {
      * @param subject - subject
      * @param options
      */
-    async grant(details: any, subject :string, options?: IJWTAuthGrantOptions) :Promise<GenericResult<string>> {
-        const realms = options && options.realms;
+    async grant(details: any, subject :string, options?: SignOptions) :Promise<GenericResult<string>> {
         try {
             let secret = await this.secret();
             if (secret.isFailure) return secret.asFailure();
 
-            let token = sign({data: details}, secret.get(), {subject: subject, audience: realms || []});
+            let token = sign({data: details}, secret.get(), {subject: subject, ...options});
             return Promise.resolve(success(token));
         } catch (e) {
             return Promise.resolve(failure([e]));
